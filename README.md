@@ -138,3 +138,19 @@ Note that the model used for battery percentage is pretty rough, and may not be 
 
 * *TODO:* The MCU still stays active when Radxa suspends. The MCU will consume around 20mA @ 5V in this state, which isn't ideal. When in shutdown, the MCU enters deep sleep, consuming much less power, and only wakes on a wakeup timer or power button interrupt. We should implement similar handling for the suspend case, entering suspend+deep sleep via power key tap. After that, we can measure the actual power draw in suspend.
 
+### Power Measurements
+
+(08/24): Measured with a USB power meter, battery unplugged.
+
+| Radxa    | RP2040     | Watts |
+| -------- | ---------- | ----- |
+| Active   | Active     | 0.8W  |
+| Suspend  | Active     | 0.45W |
+| Suspend  | Deep Sleep | TODO  |
+| Poweroff | Deep Sleep | 0.05W |
+
+According to the measurements in the RP2040 [repo](https://github.com/ardangelo/beepberry-rp2040), MCU active draws 0.125W, so Radxa in suspend should be contributing 0.275W power draw.
+
+That means in suspend, we'll draw: (Radxa_suspend + RP2040_deepsleep) = (275mW + 25mW) = 300mW
+
+Beepy battery is 7.4Wh, so total suspend time should be: (7.4Wh/300mW) = 24.67 hours
